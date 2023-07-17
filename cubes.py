@@ -42,18 +42,18 @@ def generate_polycubes(n: int, use_cache: bool = False) -> list[np.ndarray]:
         results = get_cache(n)
         print(f"\nGot polycubes from cache n={n}")
     else:
-        pollycubes = generate_polycubes(n-1, use_cache)
+        polycubes = generate_polycubes(n-1, use_cache)
 
-        known_ids = set()
+        known_ids = {}
         done = 0
         print(f"\nHashing polycubes n={n}")
-        for base_cube in pollycubes:
+        for base_cube in polycubes:
             for new_cube in expand_cube(base_cube):
-                cube_id = get_canonical_packing(new_cube, known_ids)
+                cube_id_hash, cube_id = get_canonical_packing_hash(new_cube, known_ids, n)
                 known_ids.add(cube_id)
-            log_if_needed(done, len(pollycubes))
+            log_if_needed(done, len(polycubes))
             done += 1
-        log_if_needed(done, len(pollycubes))
+        log_if_needed(done, len(polycubes))
 
         print(f"\nGenerating polycubes from hash n={n}")
         results = []
@@ -70,8 +70,8 @@ def generate_polycubes(n: int, use_cache: bool = False) -> list[np.ndarray]:
     return results
 
 
-def get_canonical_packing(polycube: np.ndarray, 
-                          known_ids: set[bytes]) -> bytes:
+def get_canonical_packing_hash(polycube: np.ndarray, 
+                          known_ids: set[bytes], n:int) -> bytes:
     """
     Determines if a polycube has already been seen.
 
@@ -88,14 +88,31 @@ def get_canonical_packing(polycube: np.ndarray,
     cube_id (bytes): the id for this cube
 
     """
-    max_id = b'\x00'
-    for cube_rotation in all_rotations(polycube):
-        this_id = pack(cube_rotation)
-        if (this_id in known_ids):
-            return this_id
-        if (this_id > max_id):
-            max_id = this_id
-    return max_id
+
+    accum = np.zeros([3], dtype=np.int32)
+
+    todo = np.zeros([3, n], dtype=np.int32)
+
+    todo_index = 0
+
+    for i, v in np.ndenumerate(polycube):
+        if v:
+            accum += i
+            todo[todo_index] = i * n
+            todo_index += 1
+
+    todo -= accum
+
+    pos_x = 
+    neg_x = 
+
+    pos_y = 
+    neg_y = 
+
+    pos_z = 
+    neg_z = 
+
+    return sum
 
 
 if __name__ == "__main__":
