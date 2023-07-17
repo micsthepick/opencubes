@@ -29,8 +29,10 @@ def generate_polycubes(n: int, use_cache: bool = False) -> list[np.ndarray]:
     list(np.array): Returns a list of all polycubes of size n as numpy byte arrays
 
     """
-    if n < 1:
+    if n < 0:
         return []
+    elif n == 0:
+        return [np.ones((0, 0, 0), dtype=np.byte)]
     elif n == 1:
         return [np.ones((1, 1, 1), dtype=np.byte)]
     elif n == 2:
